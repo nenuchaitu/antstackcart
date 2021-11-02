@@ -14,6 +14,7 @@ import {
   ApplyCouponButton,
   CouponButtonContainer,
   CartViewContainer,
+  Discount,
 } from './StyledComponents'
 
 const indexItemsList = [
@@ -32,35 +33,14 @@ const indexItemsList = [
 ]
 
 class Home extends Component {
-  state = {total: ''}
-
-  componentDidMount() {
-    this.getTotal()
-  }
-
-  getCartItemTotal = (sum, item) => sum + item.cost * item.quantity
-
-  getTotal = () => {
-    const {cartList} = this.props
-    const cartTotal = cartList.reduce(
-      (sum, item) => this.getCartItemTotal(sum, item),
-      0,
-    )
-    this.setState({total: cartTotal})
-  }
-
-  updateTotal = amount => {
-    this.setState(prevState => ({total: prevState.total + amount}))
-  }
-
   goToCoupons = () => {
     const {history} = this.props
     history.replace('/coupons')
   }
 
   render() {
-    const {cartList} = this.props
-    const {total} = this.state
+    const {cartList, total, discount} = this.props
+
     return (
       <CartViewContainer>
         <CartListContainerLarge>
@@ -73,11 +53,7 @@ class Home extends Component {
           </CartIndexContainer>
           <CartItemsList>
             {cartList.map(cartItem => (
-              <CartItems
-                key={cartItem.id}
-                cartItemDetails={cartItem}
-                updateTotal={this.updateTotal}
-              />
+              <CartItems key={cartItem.id} cartItemDetails={cartItem} />
             ))}
           </CartItemsList>
           <CartHorizontalLine />
@@ -86,6 +62,7 @@ class Home extends Component {
             <CartIndexHeading>{total}</CartIndexHeading>
           </OrderTotalContainer>
           <CouponButtonContainer>
+            {discount === 0 ? '' : <Discount>Discount:{discount}</Discount>}
             <ApplyCouponButton type="button" onClick={this.goToCoupons}>
               Apply Coupons
             </ApplyCouponButton>

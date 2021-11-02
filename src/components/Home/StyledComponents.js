@@ -90,3 +90,9 @@ export const ApplyCouponButton = styled.button`
   line-height: 16px;
   letter-spacing: 0em;
 `
+export const Discount = styled.p`
+  color: green;
+  font-size: 26px;
+  width: 100%;
+  text-align: right;
+`

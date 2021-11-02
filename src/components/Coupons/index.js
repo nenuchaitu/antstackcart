@@ -20,22 +20,10 @@ const apiStatusConstants = {
 }
 
 class Coupons extends Component {
-  state = {total: '', apiStatus: apiStatusConstants.initial, offers: []}
+  state = {apiStatus: apiStatusConstants.initial, offers: []}
 
   componentDidMount() {
     this.getCoupons()
-    this.getTotal()
-  }
-
-  getCartItemTotal = (sum, item) => sum + item.cost * item.quantity
-
-  getTotal = () => {
-    const {cartList} = this.props
-    const cartTotal = cartList.reduce(
-      (sum, item) => this.getCartItemTotal(sum, item),
-      0,
-    )
-    this.setState({total: cartTotal})
   }
 
   renderLoadingView = () => (
@@ -70,9 +58,11 @@ class Coupons extends Component {
   }
 
   applyCoupon = async id => {
-    const {offers, total} = this.state
+    const {offers} = this.state
+    const {total} = this.props
     const couponObject = offers.filter(offer => offer.id === id)
-    if (total < couponObject[0].minAmount) {
+
+    if (total > couponObject[0].minAmount) {
       this.setState({apiStatus: apiStatusConstants.inProgress})
       const offersUrl = 'https://ant-stack-node.herokuapp.com/offers/user'
       const data = {
@@ -87,14 +77,16 @@ class Coupons extends Component {
         },
       }
       const response = await fetch(offersUrl, options)
-      const amount = await response.json()
+      const amountObject = await response.json()
       if (response.status === 200) {
-        console.log(amount)
+        const {history, updateTotal} = this.props
+        updateTotal(amountObject.amount)
+        history.replace('/')
       } else {
         alert('try agian')
       }
     } else {
-      alert('insufficient cart total')
+      console.log('whats happened')
     }
   }
 
